@@ -1,0 +1,142 @@
+{% extends 'security/layout.html' %}
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <!-- Summary Cards -->
+    <div class="col-md-6 mb-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Devices</h5>
+                <p class="card-text fs-3">{{ devices.count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Active Alerts</h5>
+                <p class="card-text fs-3">{{ alerts.count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Device List -->
+    <div class="col-md-6 mb-4">
+        <h3>Your Devices</h3>
+        <ul class="list-group mb-4">
+            {% for device in devices %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ device.name }} ({{ device.device_type }}) at {{ device.location }}
+                    <span class="badge bg-secondary">{{ device.device_type }}</span>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No devices added.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+            Add New Device
+        </button>
+    </div>
+
+    <!-- Alerts List -->
+    <div class="col-md-6 mb-4">
+        <h3>Security Alerts</h3>
+        <ul class="list-group">
+            {% for alert in alerts %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ alert.timestamp|date:"m/d/Y H:i" }} - {{ alert.alert_type }} from {{ alert.device.name }}
+                    {% if not alert.resolved %}
+                        <a href="{% url 'resolve_alert' alert.id %}" class="btn btn-outline-success btn-sm">Resolve</a>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No active alerts.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- Add New Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDeviceModalLabel">Add New Device</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Device Name:</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="device_type" class="form-label">Device Type:</label>
+                    <select name="device_type" class="form-select" required>
+                        <option value="Camera">Camera</option>
+                        <option value="Alarm">Alarm</option>
+                        <option value="Motion Sensor">Motion Sensor</option>
+                        <option value="Door Lock">Door Lock</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location:</label>
+                    <input type="text" name="location" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Add Device</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    
+    const deviceData = {
+        labels: ['Camera', 'Door Lock'],
+        datasets: [{
+            data: [1, 1], // Corresponding data values
+            backgroundColor: ['#007bff', '#ffc107'], // Colors for each slice
+            hoverBackgroundColor: ['#0056b3', '#d39e00'] // Colors on hover
+        }]
+    };
+
+    // Context for the chart
+    const deviceChartCtx = document.getElementById('deviceChart').getContext('2d');
+
+    // Create the pie chart
+    new Chart(deviceChartCtx, {
+        type: 'pie',
+        data: deviceData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            // Custom label formatting
+                            const label = deviceData.labels[tooltipItem.dataIndex];
+                            const value = deviceData.datasets[0].data[tooltipItem.dataIndex];
+                            return `${label}: ${value}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+

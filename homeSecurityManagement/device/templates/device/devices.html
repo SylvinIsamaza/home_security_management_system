@@ -1,0 +1,66 @@
+{% extends 'security/layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+        Add New Device
+    </button>
+</div>
+<div class="container mt-5">
+    <h2 class="mb-4">My Security Devices</h2>
+
+    <!-- Device List -->
+    <ul class="list-group mb-4">
+        {% for device in devices %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ device.name }}</strong> <br>
+                    <span class="text-muted">{{ device.device_type }} at {{ device.location }}</span>
+                </div>
+                <span class="badge bg-primary">{{ device.device_type }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No devices added.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Add Device Button -->
+  
+
+    <!-- Add Device Modal -->
+    <div class="modal fade" id="addDeviceModal" tabindex="-1" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" class="modal-content">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDeviceModalLabel">Add New Device</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Device Name:</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="device_type" class="form-label">Device Type:</label>
+                        <select name="device_type" class="form-select" required>
+                            <option value="Camera">Camera</option>
+                            <option value="Alarm">Alarm</option>
+                            <option value="Motion Sensor">Motion Sensor</option>
+                            <option value="Door Lock">Door Lock</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location:</label>
+                        <input type="text" name="location" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Device</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

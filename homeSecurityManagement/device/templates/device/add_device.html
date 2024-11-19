@@ -1,0 +1,20 @@
+<h2>Add Security Device</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="name">Device Name:</label>
+    <input type="text" name="name" required><br>
+
+    <label for="device_type">Device Type:</label>
+    <select name="device_type" required>
+        <option value="Camera">Camera</option>
+        <option value="Alarm">Alarm</option>
+        <option value="Motion Sensor">Motion Sensor</option>
+        <option value="Door Lock">Door Lock</option>
+    </select><br>
+
+    <label for="location">Location:</label>
+    <input type="text" name="location" required><br>
+
+    <button type="submit">Add Device</button>
+</form>
+<a href="{% url 'devices' %}">Back to Devices</a>

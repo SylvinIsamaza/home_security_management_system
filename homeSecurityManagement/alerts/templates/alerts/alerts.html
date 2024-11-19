@@ -1,0 +1,55 @@
+{% extends 'security/layout.html' %}
+{% block content %}
+<h2>Active Security Alerts</h2>
+<button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#createAlertModal">
+    Create New Alert
+</button>
+<div class="modal fade" id="createAlertModal" tabindex="-1" aria-labelledby="createAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAlertModalLabel">Create New Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="device" class="form-label">Select Device:</label>
+                    <select name="device" class="form-select" required>
+                        {% for device in devices %}
+                            <option value="{{ device.id }}">{{ device.name }} ({{ device.device_type }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="alert_type" class="form-label">Alert Type:</label>
+                    <select name="alert_type" class="form-select" required>
+                        <option value="Intrusion">Intrusion</option>
+                        <option value="Low Battery">Low Battery</option>
+                        <option value="Tampering">Tampering</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Create Alert</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Alert List -->
+<ul class="list-group">
+    {% for alert in alerts %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ alert.timestamp|date:"m/d/Y H:i" }} - {{ alert.alert_type }} from {{ alert.device.name }} 
+            {% if not alert.resolved %}
+            <a href="{% url 'resolve_alert' alert.id %}" class="btn btn-outline-success btn-sm">Resolve</a>
+            {% endif%}
+        </li>
+    {% empty %}
+        <li class="list-group-item">No active alerts.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
