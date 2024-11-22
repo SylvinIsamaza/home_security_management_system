@@ -8,15 +8,15 @@
         <div class="card text-white bg-primary">
             <div class="card-body">
                 <h5 class="card-title">Total Devices</h5>
-                <p class="card-text fs-3">{{ devices.count }}</p>
+                <p class="card-text fs-3">{{ alldevices.count }}</p>
             </div>
         </div>
     </div>
     <div class="col-md-6 mb-4">
         <div class="card text-white bg-warning">
             <div class="card-body">
-                <h5 class="card-title">Active Alerts</h5>
-                <p class="card-text fs-3">{{ alerts.count }}</p>
+                <h5 class="card-title">Total Alerts</h5>
+                <p class="card-text fs-3">{{ activeAlerts.count }}</p>
             </div>
         </div>
     </div>
@@ -26,6 +26,10 @@
     <!-- Device List -->
     <div class="col-md-6 mb-4">
         <h3>Your Devices</h3>
+          <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+            Add New Device
+        </button>
         <ul class="list-group mb-4">
             {% for device in devices %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -37,10 +41,7 @@
             {% endfor %}
         </ul>
 
-        <!-- Button to trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
-            Add New Device
-        </button>
+      
     </div>
 
     <!-- Alerts List -->
@@ -96,47 +97,96 @@
         </form>
     </div>
 </div>
+<div class="row">
 
-{% endblock %}
+<h3 class="col-md-6 mb-4">Your Devices</h3>
+<h3 class="col-md-6 mb-4">Alerts</h3>
+</div>
+<div class="row">
+<canvas id="deviceTypeChart" class="col-md-6 mb-4"  style="width:100%;max-width:600px"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart for Alerts -->
+<canvas id="alertChart" class="col-md-6 mb-4" style="width:100%;max-width:600px"></canvas>
+</div>
+<!-- Chart for Device Types -->
+
+
 <script>
-    
-    const deviceData = {
-        labels: ['Camera', 'Door Lock'],
-        datasets: [{
-            data: [1, 1], // Corresponding data values
-            backgroundColor: ['#007bff', '#ffc107'], // Colors for each slice
-            hoverBackgroundColor: ['#0056b3', '#d39e00'] // Colors on hover
-        }]
-    };
+// Get the data passed from Django context (device_data and alert_data)
+var deviceLabels = {{ device_data.labels|safe }};
+var deviceData = {{ device_data.data|safe }};
+var deviceColors = [
+    "#b91d47", "#00aba9", "#2b5797", "#e8c3b9", "#1e7145", "#f39c12", "#9b59b6"
+];
 
-    // Context for the chart
-    const deviceChartCtx = document.getElementById('deviceChart').getContext('2d');
+// Create the bar chart using Chart.js for devices
+new Chart("deviceTypeChart", {
+  type: "pie",
+  data: {
+    labels: deviceLabels,
+    datasets: [{
+      label: 'Device Count by Type',
+      backgroundColor: deviceColors,
+      data: deviceData,
+      borderColor: '#000',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Device Distribution by Type'
+      }
+    }
+  }
+});
 
-    // Create the pie chart
-    new Chart(deviceChartCtx, {
-        type: 'pie',
-        data: deviceData,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            // Custom label formatting
-                            const label = deviceData.labels[tooltipItem.dataIndex];
-                            const value = deviceData.datasets[0].data[tooltipItem.dataIndex];
-                            return `${label}: ${value}`;
-                        }
-                    }
-                }
-            }
-        }
-    });
+// Create the line chart using Chart.js for alerts
+var alertLabels = {{ alert_data.labels|safe }};
+var resolvedData = {{ alert_data.resolved|safe }};
+var unresolvedData = {{ alert_data.unresolved|safe }};
+var alertColors = ["#28a745", "#dc3545"];  // Green for resolved, Red for unresolved
+
+new Chart("alertChart", {
+  type: "line",
+  data: {
+    labels: alertLabels,
+    datasets: [{
+      label: 'Resolved Alerts',
+      data: resolvedData,
+      borderColor: alertColors[0],
+      fill: false,
+      tension: 0.1
+    }, {
+      label: 'Unresolved Alerts',
+      data: unresolvedData,
+      borderColor: alertColors[1],
+      fill: false,
+      tension: 0.1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Alerts Over Time (Resolved vs Unresolved)'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
 </script>
 
-
+{% endblock %}

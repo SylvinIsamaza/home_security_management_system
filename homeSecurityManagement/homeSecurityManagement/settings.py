@@ -76,9 +76,9 @@ WSGI_APPLICATION = 'homeSecurityManagement.wsgi.application'
 DATABASES = { 
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "security",
-        "USER": "security",
-        "PASSWORD": "12345",
+        "NAME": "security_management2",
+        "USER": "security_admin",
+        "PASSWORD": "12345678",
         "HOST": "localhost", 
         "PORT": "5432",
     }
