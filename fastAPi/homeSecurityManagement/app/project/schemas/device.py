@@ -14,7 +14,7 @@ class DeviceCreate(DeviceBase):
 
 class Device(DeviceBase):
     id: int
-    owner_id: str 
+    owner_id: int 
     alerts: List[SecurityAlert] = []  
 
     class Config:

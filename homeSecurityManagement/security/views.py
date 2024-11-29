@@ -43,7 +43,8 @@ def dashboard(request):
     )
     resolved_alerts_data = {}
     unresolved_alerts_data = {}
-    
+     
+     
     for entry in alerts_by_date_resolved:
         date_str = entry['timestamp__date'].strftime('%m/%d/%Y')
         if entry['resolved']:

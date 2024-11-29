@@ -32,7 +32,13 @@ def alerts(request):
     
     
     return render(request, 'alerts/alerts.html', {
-        'page_obj': page_obj,
+        'page_obj': pa
+        
+        
+        
+        
+        
+        ge_obj,
         'devices': devices
     })     
 @login_required

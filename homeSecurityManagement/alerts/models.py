@@ -3,7 +3,7 @@ from device.models import Device
 
 class SecurityAlert(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
-    alert_type = models.CharField(max_length=100)  # e.g., 'Intrusion', 'Low Battery', 'Tampering'
+    alert_type = models.CharField(max_length=100) 
     timestamp = models.DateTimeField(auto_now_add=True)
     resolved = models.BooleanField(default=False)
 

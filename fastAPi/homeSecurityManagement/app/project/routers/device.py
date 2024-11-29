@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from ..crud import create_device,get_devices,get_device_by_id,update_device,delete_device
-from ..schemas import DeviceCreate, Device
+from ..crud import create_device,get_devices,get_device_by_id,update_device,delete_device,get_all_devices,get_devices_owners
+from ..schemas import DeviceCreate, Device,OwnerUser
 from ..database import get_db
 from ..models import User
 from fastapi.security import OAuth2PasswordBearer
@@ -40,3 +40,11 @@ def delete_device_router(device_id: int, db: Session = Depends(get_db), current_
     if not delete_device(db, device_id):
         raise HTTPException(status_code=404, detail="Device not found")
     return
+
+@router.get("/all", response_model=List[Device])
+def get_devices_route(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), ):
+    return get_all_devices(db, skip=skip, limit=limit)
+User
+@router.get("/owners",response_model=List[OwnerUser])
+def get_devices_owners_routes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return get_devices_owners(db, skip=skip, limit=limit)

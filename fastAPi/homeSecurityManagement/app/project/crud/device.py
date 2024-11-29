@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from ..schemas import DeviceCreate
-from ..models import Device
+from ..models import Device,User
 
 
 def create_device(db: Session, device: DeviceCreate, user_id: int) -> Device:
@@ -38,3 +38,10 @@ def delete_device(db: Session, device_id: int) -> bool:
         db.commit()
         return True
     return False
+
+
+def get_all_devices(db: Session, skip: int = 0, limit: int = 100) -> List[Device]:  
+    return db.query(Device).offset(skip).limit(limit).all()
+
+def get_devices_owners(db: Session, skip: int = 0, limit: int = 100) -> List[Device]:  
+    return db.query(User).offset(skip).limit(limit).all()

@@ -12,9 +12,19 @@ class UserCreate(BaseModel):
 
 
 class User(BaseModel):
-    id: str
+    id: int
     username: str
     created_at: datetime
 
     class Config:
         orm_mode = True  
+
+
+class OwnerUser(BaseModel):
+    id: int
+    username: str
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+    
