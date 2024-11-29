@@ -41,7 +41,28 @@ def delete_device(db: Session, device_id: int) -> bool:
 
 
 def get_all_devices(db: Session, skip: int = 0, limit: int = 100) -> List[Device]:  
-    return db.query(Device).offset(skip).limit(limit).all()
+    if limit > 5000:
+        all_devices = []
+
+        batch_size = 5000
+        total_fetched = 0
+
+        while total_fetched < limit:
+            remaining = limit - total_fetched
+            batch_limit = min(batch_size, remaining)
+            batch = db.query(Device).offset(total_fetched).limit(batch_limit).all()
+            
+            if not batch:
+                break
+
+            all_devices.extend(batch)
+
+            total_fetched += batch_limit
+
+        return all_devices
+    else:
+       
+        return db.query(Device).limit(limit).all()
 
 def get_devices_owners(db: Session, skip: int = 0, limit: int = 100) -> List[Device]:  
     return db.query(User).offset(skip).limit(limit).all()
