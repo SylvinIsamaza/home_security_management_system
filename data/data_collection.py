@@ -5,7 +5,7 @@ inner_merged_df = None
 
 try:
     # Device data
-    device_api = requests.get('http://127.0.0.1:8000/devices/all?skip=0&limit=50000')
+    device_api = requests.get('http://127.0.0.1:8000/devices/all?skip=0&limit=500000')
     device_api.raise_for_status()
     device_api_data = device_api.json()
 
@@ -84,6 +84,7 @@ try:
 
 
     print(inner_merged_df.head())
+    print(inner_merged_df.tail())
   
 
 except requests.exceptions.RequestException as e:
